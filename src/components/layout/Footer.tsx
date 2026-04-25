@@ -13,7 +13,7 @@ export function Footer() {
             Tailwind v4
           </a>
           {' · '}
-          <a href="https://github.com/joshua-makes/quick-unit-swap" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[rgb(var(--foreground))]">
+          <a href="https://github.com/joshua-makes/total-unit-converter" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[rgb(var(--foreground))]">
             Source
           </a>
         </p>
