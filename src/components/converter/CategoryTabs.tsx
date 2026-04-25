@@ -9,11 +9,26 @@ interface CategoryTabsProps {
 }
 
 const CATEGORY_ICONS: Record<Category, string> = {
-  length: '📏',
-  weight: '⚖️',
+  length:      '📏',
+  area:        '⬛',
+  volume:      '🧪',
+  weight:      '⚖️',
   temperature: '🌡️',
-  volume: '🧪',
-  speed: '🚀',
+  speed:       '🚀',
+  time:        '⏱️',
+  angle:       '📐',
+  frequency:   '🔁',
+  pressure:    '🔧',
+  energy:      '⚡',
+  power:       '💡',
+  force:       '💪',
+  data:        '💾',
+  fuel:        '⛽',
+  voltage:     '🔌',
+  current:     '〰️',
+  resistance:  '🔗',
+  capacitance: '🔋',
+  charge:      '🪫',
 };
 
 export function CategoryTabs({ value, onChange }: CategoryTabsProps) {
