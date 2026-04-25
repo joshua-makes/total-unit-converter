@@ -25,6 +25,17 @@ function initInputs(formula: Formula | undefined): Record<string, string> {
   return result;
 }
 
+function initInputUnits(formula: Formula | undefined): Record<string, string> {
+  if (!formula) return {};
+  const result: Record<string, string> = {};
+  for (const inp of formula.inputs) {
+    if (inp.convertCategory && inp.convertBaseKey) {
+      result[inp.id] = inp.convertBaseKey;
+    }
+  }
+  return result;
+}
+
 export function CalculatorPanel({ category, precision }: Props) {
   const formulas = useMemo(
     () => CALCULATIONS[category] ?? [],
@@ -32,7 +43,7 @@ export function CalculatorPanel({ category, precision }: Props) {
   );
   const [formulaId, setFormulaId] = useState<string>(formulas[0]?.id ?? '');
   const [inputs, setInputs] = useState<Record<string, string>>(() => initInputs(formulas[0]));
-  const [outputUnitKey, setOutputUnitKey] = useState<string>(formulas[0]?.outputConvertFromKey ?? '');
+  const [inputUnits, setInputUnits] = useState<Record<string, string>>(() => initInputUnits(formulas[0]));
 
   const formula = useMemo(
     () => formulas.find((f) => f.id === formulaId) ?? formulas[0],
@@ -43,7 +54,7 @@ export function CalculatorPanel({ category, precision }: Props) {
     const next = formulas.find((f) => f.id === id);
     setFormulaId(id);
     setInputs(initInputs(next));
-    setOutputUnitKey(next?.outputConvertFromKey ?? '');
+    setInputUnits(initInputUnits(next));
   }
 
   const numericInputs = useMemo<Record<string, number>>(() => {
@@ -51,25 +62,30 @@ export function CalculatorPanel({ category, precision }: Props) {
     const result: Record<string, number> = {};
     for (const inp of formula.inputs) {
       const raw = inputs[inp.id];
+      let num: number | undefined;
       if (raw !== undefined && raw !== '') {
-        result[inp.id] = parseFloat(raw);
+        num = parseFloat(raw);
       } else if (inp.defaultValue !== undefined) {
-        result[inp.id] = inp.defaultValue;
+        num = inp.defaultValue;
+      }
+      if (num !== undefined) {
+        // Auto-convert from selected unit to the base unit compute() expects
+        if (inp.convertCategory && inp.convertBaseKey) {
+          const selectedUnit = inputUnits[inp.id] ?? inp.convertBaseKey;
+          if (selectedUnit !== inp.convertBaseKey && isFinite(num)) {
+            num = convert(num, selectedUnit, inp.convertBaseKey, inp.convertCategory as Category);
+          }
+        }
+        result[inp.id] = num;
       }
     }
     return result;
-  }, [inputs, formula]);
+  }, [inputs, inputUnits, formula]);
 
   const result = useMemo(() => {
     if (!formula) return null;
     return formula.compute(numericInputs);
   }, [formula, numericInputs]);
-
-  const convertedResult = useMemo<number | null>(() => {
-    if (result === null || !formula?.outputConvertCategory || !formula?.outputConvertFromKey) return result;
-    if (!outputUnitKey || outputUnitKey === formula.outputConvertFromKey) return result;
-    return convert(result, formula.outputConvertFromKey, outputUnitKey, formula.outputConvertCategory as Category);
-  }, [result, formula, outputUnitKey]);
 
   if (formulas.length === 0) {
     return (
@@ -121,65 +137,82 @@ export function CalculatorPanel({ category, precision }: Props) {
                 <div key={inp.id} className="space-y-1.5">
                   <Label htmlFor={`calc-${inp.id}`} className="text-sm font-medium">
                     {inp.label}
-                    {inp.unit && (
+                    {!inp.convertCategory && inp.unit && (
                       <span className="ml-1.5 text-[11px] font-normal text-[rgb(var(--muted-foreground))]">
                         {inp.unit}
                       </span>
                     )}
                   </Label>
-                  <Input
-                    id={`calc-${inp.id}`}
-                    type="number"
-                    inputMode="decimal"
-                    placeholder={inp.placeholder}
-                    min={inp.min}
-                    max={inp.max}
-                    step={inp.step ?? 'any'}
-                    value={inputs[inp.id] ?? ''}
-                    onChange={(e) =>
-                      setInputs((prev) => ({ ...prev, [inp.id]: e.target.value }))
-                    }
-                    className="h-10"
-                  />
+                  {inp.convertCategory ? (
+                    <div className="flex gap-2">
+                      <Input
+                        id={`calc-${inp.id}`}
+                        type="number"
+                        inputMode="decimal"
+                        placeholder={inp.placeholder}
+                        min={inp.min}
+                        max={inp.max}
+                        step={inp.step ?? 'any'}
+                        value={inputs[inp.id] ?? ''}
+                        onChange={(e) =>
+                          setInputs((prev) => ({ ...prev, [inp.id]: e.target.value }))
+                        }
+                        className="h-10 min-w-0 flex-1"
+                      />
+                      <Select
+                        value={inputUnits[inp.id] ?? inp.convertBaseKey ?? ''}
+                        onChange={(e) =>
+                          setInputUnits((prev) => ({ ...prev, [inp.id]: e.target.value }))
+                        }
+                        className="h-10 w-auto max-w-[9rem] shrink-0 text-xs"
+                        aria-label={`Unit for ${inp.label}`}
+                      >
+                        {Object.entries(CATEGORIES[inp.convertCategory as Category].units).map(([key, def]) => (
+                          <option key={key} value={key}>{def.symbol}</option>
+                        ))}
+                      </Select>
+                    </div>
+                  ) : (
+                    <Input
+                      id={`calc-${inp.id}`}
+                      type="number"
+                      inputMode="decimal"
+                      placeholder={inp.placeholder}
+                      min={inp.min}
+                      max={inp.max}
+                      step={inp.step ?? 'any'}
+                      value={inputs[inp.id] ?? ''}
+                      onChange={(e) =>
+                        setInputs((prev) => ({ ...prev, [inp.id]: e.target.value }))
+                      }
+                      className="h-10"
+                    />
+                  )}
                 </div>
               ))}
             </div>
 
             {/* ── Result ── */}
-            <div className="mt-5 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium text-[rgb(var(--muted-foreground))]">
-                  {formula.outputLabel}
-                </span>
-                {formula.outputConvertCategory && (
-                  <Select
-                    value={outputUnitKey}
-                    onChange={(e) => setOutputUnitKey(e.target.value)}
-                    className="h-8 w-auto min-w-[8rem] py-0 text-sm"
-                    aria-label="Output unit"
-                  >
-                    {Object.entries(CATEGORIES[formula.outputConvertCategory as Category].units).map(([key, def]) => (
-                      <option key={key} value={key}>{def.label} ({def.symbol})</option>
-                    ))}
-                  </Select>
-                )}
-              </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
-                  {convertedResult !== null
-                    ? formatNumber(convertedResult, precision)
-                    : <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">Enter values above</span>
-                  }
-                </span>
-                {convertedResult !== null && (
-                  <span className="text-sm font-normal text-[rgb(var(--muted-foreground))]">
-                    {formula.outputConvertCategory
-                      ? CATEGORIES[formula.outputConvertCategory as Category].units[outputUnitKey]?.symbol ?? ''
-                      : formula.outputUnit
-                    }
+            <div className="mt-5 flex items-baseline justify-between gap-4 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
+              <span className="text-sm font-medium text-[rgb(var(--muted-foreground))]">
+                {formula.outputLabel}
+              </span>
+              <span className="text-right text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
+                {result !== null ? (
+                  <>
+                    {formatNumber(result, precision)}
+                    {formula.outputUnit && (
+                      <span className="ml-1.5 text-sm font-normal text-[rgb(var(--muted-foreground))]">
+                        {formula.outputUnit}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">
+                    Enter values above
                   </span>
                 )}
-              </div>
+              </span>
             </div>
           </div>
         </>
