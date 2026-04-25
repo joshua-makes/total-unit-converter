@@ -91,6 +91,7 @@ export const CATEGORIES: Record<Category, CategoryDef> = {
       gal:     { label: 'Gallon (US)',        symbol: 'gal',   factor: 3.785411784 },
       pt_uk:   { label: 'Pint (UK)',          symbol: 'pt UK', factor: 0.568261 },
       gal_uk:  { label: 'Gallon (UK)',        symbol: 'gal UK',factor: 4.54609 },
+      bbl:     { label: 'Oil Barrel',          symbol: 'bbl',   factor: 158.987294928 },
     },
   },
 
@@ -110,6 +111,7 @@ export const CATEGORIES: Record<Category, CategoryDef> = {
       ton_us: { label: 'Short Ton (US)',  symbol: 'ton', factor: 907184.74 },
       ton_uk: { label: 'Long Ton (UK)',   symbol: 'LT',  factor: 1016046.9 },
       ct:     { label: 'Carat',           symbol: 'ct',  factor: 0.2 },
+      gr:     { label: 'Grain',            symbol: 'gr',  factor: 0.06479891 },
     },
   },
 
@@ -139,6 +141,7 @@ export const CATEGORIES: Record<Category, CategoryDef> = {
       knot:   { label: 'Knot',               symbol: 'kn',   factor: 0.514444 },
       mach:   { label: 'Mach (sea level)',   symbol: 'Ma',   factor: 343 },
       c:      { label: 'Speed of Light',     symbol: 'c',    factor: 299792458 },
+      'ft/min': { label: 'Feet/Minute',        symbol: 'ft/min', factor: 0.00508 },
     },
   },
 
@@ -158,7 +161,8 @@ export const CATEGORIES: Record<Category, CategoryDef> = {
       month:   { label: 'Month (avg)',    symbol: 'mo',   factor: 2629800 },
       year:    { label: 'Year (Julian)',  symbol: 'yr',   factor: 31557600 },
       decade:  { label: 'Decade',         symbol: 'dec',  factor: 315576000 },
-      century: { label: 'Century',        symbol: 'cent', factor: 3155760000 },
+      century:   { label: 'Century',        symbol: 'cent',  factor: 3155760000 },
+      fortnight: { label: 'Fortnight',       symbol: 'fn',    factor: 1209600 },
     },
   },
 
