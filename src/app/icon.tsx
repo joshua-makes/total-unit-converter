@@ -11,16 +11,68 @@ export default function Icon() {
         style={{
           width: 32,
           height: 32,
-          borderRadius: 8,
-          background: '#6366f1',
+          borderRadius: 7,
+          background: 'linear-gradient(135deg, #6366f1 0%, #3730a3 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 20,
-          color: '#fff',
+          position: 'relative',
         }}
       >
-        ⚡
+        {/* Top arrow line */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 9,
+            left: 5,
+            width: 17,
+            height: 3,
+            background: 'white',
+            borderRadius: 2,
+            display: 'flex',
+          }}
+        />
+        {/* Top arrowhead */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 5,
+            left: 18,
+            width: 7,
+            height: 7,
+            borderTop: '3px solid white',
+            borderRight: '3px solid white',
+            transform: 'rotate(45deg)',
+            display: 'flex',
+          }}
+        />
+        {/* Bottom arrow line */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 9,
+            right: 5,
+            width: 17,
+            height: 3,
+            background: 'white',
+            borderRadius: 2,
+            display: 'flex',
+          }}
+        />
+        {/* Bottom arrowhead */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 5,
+            right: 18,
+            width: 7,
+            height: 7,
+            borderBottom: '3px solid white',
+            borderLeft: '3px solid white',
+            transform: 'rotate(45deg)',
+            display: 'flex',
+          }}
+        />
       </div>
     ),
     { ...size }

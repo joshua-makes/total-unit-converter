@@ -79,15 +79,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico',            sizes: 'any' },
-      { url: '/icon-16.png',            sizes: '16x16', type: 'image/png' },
-      { url: '/icon-32.png',            sizes: '32x32', type: 'image/png' },
-      { url: '/icon-192.png',           sizes: '192x192', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon',        type: 'image/png', sizes: '32x32' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png',   sizes: '180x180', type: 'image/png' },
+      { url: '/apple-icon', type: 'image/png', sizes: '180x180' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon.svg',
   },
   manifest: '/site.webmanifest',
   other: {
@@ -110,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script

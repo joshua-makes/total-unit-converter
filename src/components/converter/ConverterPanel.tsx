@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/Label';
 import { CATEGORIES, type Category } from '@/lib/units';
 import { convert } from '@/lib/convert';
 import { formatNumber } from '@/lib/format';
+import { UNIT_PRESETS } from '@/lib/presets';
+import { cn } from '@/lib/utils';
 
 interface ConverterPanelProps {
   category: Category;
@@ -34,6 +36,8 @@ export function ConverterPanel({
 }: ConverterPanelProps) {
   const units = CATEGORIES[category].units;
   const unitKeys = Object.keys(units);
+  const presets = UNIT_PRESETS[category];
+  const activePreset = presets?.find((p) => p.from === fromUnit && p.to === toUnit) ?? null;
 
   const result = useMemo(() => {
     if (inputValue === '' || inputValue === '-') return '';
@@ -64,6 +68,37 @@ export function ConverterPanel({
 
   return (
     <Card className="overflow-hidden p-0">
+      {/* ── Unit system presets strip ── */}
+      {presets && presets.length > 0 && (
+        <div className="border-b border-[rgb(var(--border))] bg-[rgb(var(--muted))]/30 px-4 py-3">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[rgb(var(--muted-foreground))]">Common pairings</p>
+          <div className="flex flex-wrap gap-1.5">
+            {presets.map((preset) => {
+              const isActive = preset.from === fromUnit && preset.to === toUnit;
+              return (
+                <button
+                  key={`${preset.from}-${preset.to}`}
+                  type="button"
+                  onClick={() => {
+                    onFromUnitChange(preset.from);
+                    onToUnitChange(preset.to);
+                  }}
+                  className={cn(
+                    'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))]',
+                    isActive
+                      ? 'bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))]'
+                      : 'bg-[rgb(var(--muted))] text-[rgb(var(--muted-foreground))] hover:bg-[rgb(var(--accent))] hover:text-[rgb(var(--accent-foreground))]',
+                  )}
+                  aria-pressed={isActive}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 divide-y divide-[rgb(var(--border))] sm:grid-cols-[1fr_44px_1fr] sm:divide-x sm:divide-y-0">
 
         {/* ── FROM ── */}
@@ -158,10 +193,10 @@ export function ConverterPanel({
             role="status"
             aria-live="polite"
             aria-label={`Result in ${toSymbol}`}
-            className="flex h-14 w-full items-center rounded-lg border border-[rgb(var(--input))] bg-[rgb(var(--muted))] px-3"
+            className="flex h-14 w-full items-center overflow-x-auto rounded-lg border border-[rgb(var(--input))] bg-[rgb(var(--muted))] px-3"
           >
             {result
-              ? <span className="text-2xl font-mono font-semibold tracking-tight text-[rgb(var(--foreground))]">{result}</span>
+              ? <span className="whitespace-nowrap text-2xl font-mono font-semibold tracking-tight text-[rgb(var(--foreground))]">{result}</span>
               : <span className="text-[rgb(var(--muted-foreground))]">—</span>
             }
           </div>
