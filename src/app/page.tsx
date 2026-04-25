@@ -7,9 +7,11 @@ import { CategoryNav, CATEGORY_ICONS } from '@/components/converter/CategoryTabs
 import { ConverterPanel } from '@/components/converter/ConverterPanel';
 import { QuickConversions } from '@/components/converter/QuickConversions';
 import { PrecisionControl } from '@/components/converter/PrecisionControl';
+import { CalculatorPanel } from '@/components/calculator/CalculatorPanel';
 import { Toast } from '@/components/ui/Toast';
 import { type Category, CATEGORIES } from '@/lib/units';
 import { loadPrefs, savePrefs } from '@/lib/storage';
+import { cn } from '@/lib/utils';
 
 const DEFAULT_CATEGORY: Category = 'length';
 const DEFAULT_PRECISION = 4;
@@ -22,6 +24,7 @@ export default function HomePage() {
   const [precision, setPrecision]   = useState<number>(DEFAULT_PRECISION);
   const [toast, setToast]           = useState<string | null>(null);
   const [mounted, setMounted]       = useState(false);
+  const [mode, setMode]             = useState<'convert' | 'calculate'>('convert');
 
   useEffect(() => {
     setMounted(true);
@@ -89,36 +92,67 @@ export default function HomePage() {
               <span className="text-4xl leading-none" aria-hidden="true">
                 {CATEGORY_ICONS[category]}
               </span>
-              <div>
+              <div className="flex-1 min-w-0">
                 <h1 className="text-xl font-bold leading-tight">{CATEGORIES[category].name}</h1>
                 <p className="text-sm text-[rgb(var(--muted-foreground))]">
                   {unitCount} unit{unitCount !== 1 ? 's' : ''} available
                 </p>
               </div>
+
+              {/* Convert / Calculate mode toggle */}
+              <div className="flex rounded-xl bg-[rgb(var(--muted))] p-1 gap-0.5 shrink-0" role="tablist" aria-label="Mode">
+                {(['convert', 'calculate'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === m}
+                    onClick={() => setMode(m)}
+                    className={cn(
+                      'rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors',
+                      mode === m
+                        ? 'bg-[rgb(var(--background))] text-[rgb(var(--foreground))] shadow-sm'
+                        : 'text-[rgb(var(--muted-foreground))] hover:text-[rgb(var(--foreground))]',
+                    )}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Converter */}
-            <ConverterPanel
-              category={category}
-              fromUnit={fromUnit}
-              toUnit={toUnit}
-              inputValue={inputValue}
-              precision={precision}
-              onFromUnitChange={setFromUnit}
-              onToUnitChange={setToUnit}
-              onInputChange={setInputValue}
-              onCopied={showToast}
-            />
+            {/* Main panel: Converter or Calculator */}
+            {mode === 'convert' ? (
+              <ConverterPanel
+                category={category}
+                fromUnit={fromUnit}
+                toUnit={toUnit}
+                inputValue={inputValue}
+                precision={precision}
+                onFromUnitChange={setFromUnit}
+                onToUnitChange={setToUnit}
+                onInputChange={setInputValue}
+                onCopied={showToast}
+              />
+            ) : (
+              <CalculatorPanel
+                key={category}
+                category={category}
+                precision={precision}
+              />
+            )}
 
-            {/* Precision control */}
+            {/* Precision control — always visible */}
             <PrecisionControl value={precision} onChange={setPrecision} />
 
-            {/* Quick conversions */}
-            <QuickConversions
-              category={category}
-              precision={precision}
-              onSelect={handleQuickConversion}
-            />
+            {/* Quick conversions — only in convert mode */}
+            {mode === 'convert' && (
+              <QuickConversions
+                category={category}
+                precision={precision}
+                onSelect={handleQuickConversion}
+              />
+            )}
 
           </div>
         </main>

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Total Unit Converter — 180+ units across 20 categories';
+export const alt = 'QuickUnitSwap — convert and calculate with 150+ units across 15 categories';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -65,7 +65,7 @@ export default function TwitterImage() {
               display: 'flex',
             }}
           >
-            Total UnitConverter
+            QuickUnitSwap
           </div>
           <div
             style={{
@@ -76,7 +76,7 @@ export default function TwitterImage() {
               display: 'flex',
             }}
           >
-            180+ units · 20 categories · Free &amp; instant
+            150+ units · 15 categories · Free &amp; instant
           </div>
         </div>
       </div>

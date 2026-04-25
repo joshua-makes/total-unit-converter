@@ -13,12 +13,7 @@ export type Category =
   | 'power'
   | 'force'
   | 'data'
-  | 'fuel'
-  | 'voltage'
-  | 'current'
-  | 'resistance'
-  | 'capacitance'
-  | 'charge';
+  | 'fuel';
 
 export interface UnitDef {
   label: string;
@@ -305,72 +300,6 @@ export const CATEGORIES: Record<Category, CategoryDef> = {
     },
   },
 
-  // ── VOLTAGE ──────────────────────────────────────────────────
-  voltage: {
-    name: 'Voltage',
-    baseUnit: 'V',
-    units: {
-      μV: { label: 'Microvolt',  symbol: 'μV', factor: 1e-6 },
-      mV: { label: 'Millivolt',  symbol: 'mV', factor: 0.001 },
-      V:  { label: 'Volt',       symbol: 'V',  factor: 1 },
-      kV: { label: 'Kilovolt',   symbol: 'kV', factor: 1000 },
-      MV: { label: 'Megavolt',   symbol: 'MV', factor: 1e6 },
-    },
-  },
-
-  // ── ELECTRIC CURRENT ─────────────────────────────────────────
-  current: {
-    name: 'Electric Current',
-    baseUnit: 'A',
-    units: {
-      nA: { label: 'Nanoampere',  symbol: 'nA', factor: 1e-9 },
-      μA: { label: 'Microampere', symbol: 'μA', factor: 1e-6 },
-      mA: { label: 'Milliampere', symbol: 'mA', factor: 0.001 },
-      A:  { label: 'Ampere',      symbol: 'A',  factor: 1 },
-      kA: { label: 'Kiloampere',  symbol: 'kA', factor: 1000 },
-    },
-  },
-
-  // ── RESISTANCE ───────────────────────────────────────────────
-  resistance: {
-    name: 'Resistance',
-    baseUnit: 'Ω',
-    units: {
-      'mΩ': { label: 'Milliohm', symbol: 'mΩ', factor: 0.001 },
-      'Ω':  { label: 'Ohm',      symbol: 'Ω',  factor: 1 },
-      'kΩ': { label: 'Kilohm',   symbol: 'kΩ', factor: 1000 },
-      'MΩ': { label: 'Megohm',   symbol: 'MΩ', factor: 1e6 },
-      'GΩ': { label: 'Gigaohm',  symbol: 'GΩ', factor: 1e9 },
-    },
-  },
-
-  // ── CAPACITANCE ──────────────────────────────────────────────
-  capacitance: {
-    name: 'Capacitance',
-    baseUnit: 'F',
-    units: {
-      pF: { label: 'Picofarad',  symbol: 'pF', factor: 1e-12 },
-      nF: { label: 'Nanofarad',  symbol: 'nF', factor: 1e-9 },
-      μF: { label: 'Microfarad', symbol: 'μF', factor: 1e-6 },
-      mF: { label: 'Millifarad', symbol: 'mF', factor: 0.001 },
-      F:  { label: 'Farad',      symbol: 'F',  factor: 1 },
-    },
-  },
-
-  // ── ELECTRIC CHARGE ──────────────────────────────────────────
-  charge: {
-    name: 'Electric Charge',
-    baseUnit: 'C',
-    units: {
-      nC:  { label: 'Nanocoulomb',   symbol: 'nC',  factor: 1e-9 },
-      μC:  { label: 'Microcoulomb',  symbol: 'μC',  factor: 1e-6 },
-      mC:  { label: 'Millicoulomb',  symbol: 'mC',  factor: 0.001 },
-      C:   { label: 'Coulomb',       symbol: 'C',   factor: 1 },
-      mAh: { label: 'Milliamp-Hour', symbol: 'mAh', factor: 3.6 },
-      Ah:  { label: 'Amp-Hour',      symbol: 'Ah',  factor: 3600 },
-      kAh: { label: 'Kiloamp-Hour',  symbol: 'kAh', factor: 3_600_000 },
-    },
-  },
 };
 
 export const QUICK_CONVERSIONS: Record<
@@ -481,40 +410,5 @@ export const QUICK_CONVERSIONS: Record<
     { value: 1,  from: 'mpg_us',      to: 'km_per_l',    label: '1 mpg → km/L' },
     { value: 1,  from: 'mpg_uk',      to: 'km_per_l',    label: '1 mpg UK → km/L' },
     { value: 10, from: 'km_per_l',    to: 'l_per_100km', label: '10 km/L → L/100km' },
-  ],
-  voltage: [
-    { value: 1,   from: 'kV', to: 'V',  label: '1 kV → V' },
-    { value: 240, from: 'V',  to: 'kV', label: '240 V → kV' },
-    { value: 1,   from: 'V',  to: 'mV', label: '1 V → mV' },
-    { value: 3.7, from: 'V',  to: 'mV', label: '3.7 V → mV' },
-    { value: 1,   from: 'MV', to: 'kV', label: '1 MV → kV' },
-  ],
-  current: [
-    { value: 1,   from: 'A',  to: 'mA', label: '1 A → mA' },
-    { value: 500, from: 'mA', to: 'A',  label: '500 mA → A' },
-    { value: 1,   from: 'kA', to: 'A',  label: '1 kA → A' },
-    { value: 1,   from: 'μA', to: 'mA', label: '1 μA → mA' },
-    { value: 20,  from: 'mA', to: 'A',  label: '20 mA → A' },
-  ],
-  resistance: [
-    { value: 1,     from: 'kΩ', to: 'Ω',  label: '1 kΩ → Ω' },
-    { value: 10000, from: 'Ω',  to: 'kΩ', label: '10000 Ω → kΩ' },
-    { value: 1,     from: 'MΩ', to: 'kΩ', label: '1 MΩ → kΩ' },
-    { value: 1,     from: 'GΩ', to: 'MΩ', label: '1 GΩ → MΩ' },
-    { value: 1,     from: 'Ω',  to: 'mΩ', label: '1 Ω → mΩ' },
-  ],
-  capacitance: [
-    { value: 1,   from: 'μF', to: 'nF', label: '1 μF → nF' },
-    { value: 1,   from: 'F',  to: 'μF', label: '1 F → μF' },
-    { value: 100, from: 'pF', to: 'nF', label: '100 pF → nF' },
-    { value: 1,   from: 'mF', to: 'μF', label: '1 mF → μF' },
-    { value: 10,  from: 'nF', to: 'pF', label: '10 nF → pF' },
-  ],
-  charge: [
-    { value: 1,    from: 'Ah',  to: 'C',   label: '1 Ah → C' },
-    { value: 1,    from: 'mAh', to: 'C',   label: '1 mAh → C' },
-    { value: 3000, from: 'mAh', to: 'Ah',  label: '3000 mAh → Ah' },
-    { value: 1,    from: 'C',   to: 'mAh', label: '1 C → mAh' },
-    { value: 1,    from: 'kAh', to: 'Ah',  label: '1 kAh → Ah' },
   ],
 };

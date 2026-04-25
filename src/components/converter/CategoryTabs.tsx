@@ -22,11 +22,6 @@ export const CATEGORY_ICONS: Record<Category, string> = {
   force:       '💪',
   data:        '💾',
   fuel:        '⛽',
-  voltage:     '🔌',
-  current:     '〰️',
-  resistance:  '🔗',
-  capacitance: '🔋',
-  charge:      '🪫',
 };
 
 interface CategoryGroup {
@@ -38,7 +33,6 @@ export const CATEGORY_GROUPS: CategoryGroup[] = [
   { label: 'Physical',          items: ['length', 'area', 'volume', 'weight', 'temperature'] },
   { label: 'Motion & Time',     items: ['speed', 'time', 'angle', 'frequency'] },
   { label: 'Energy & Forces',   items: ['energy', 'power', 'force', 'pressure'] },
-  { label: 'Electrical',        items: ['voltage', 'current', 'resistance', 'capacitance', 'charge'] },
   { label: 'Computing & Other', items: ['data', 'fuel'] },
 ];
 

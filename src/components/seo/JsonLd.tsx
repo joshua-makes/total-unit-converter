@@ -1,5 +1,5 @@
 const SITE_URL = 'https://www.quickunitswap.com';
-const SITE_NAME = 'Total Unit Converter';
+const SITE_NAME = 'QuickUnitSwap';
 
 /** WebApplication schema — tells Google this is a web app (eligible for rich results). */
 const webAppSchema = {
@@ -11,7 +11,7 @@ const webAppSchema = {
   operatingSystem: 'Any',
   browserRequirements: 'Requires JavaScript. Requires HTML5.',
   description:
-    'Free online unit converter with 20 categories and 180+ units including length, area, volume, weight, temperature, speed, time, angle, frequency, pressure, energy, power, force, data storage, fuel economy, voltage, current, resistance, capacitance, and electric charge.',
+    'Free online unit converter and calculator — 15 categories, 150+ units. Convert and calculate length, area, volume, weight, temperature, speed, time, angle, frequency, pressure, energy, power, force, data storage, and fuel economy.',
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -33,11 +33,6 @@ const webAppSchema = {
     'Force converter (N to kip)',
     'Data storage converter (bit to PB, KiB to TiB)',
     'Fuel economy converter (mpg to L/100km)',
-    'Voltage converter (μV to MV)',
-    'Current converter (nA to kA)',
-    'Resistance converter (mΩ to GΩ)',
-    'Capacitance converter (pF to F)',
-    'Electric charge converter (nC to kAh)',
   ],
   screenshot: `${SITE_URL}/og.png`,
   author: {

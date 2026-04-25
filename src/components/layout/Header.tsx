@@ -10,13 +10,13 @@ export function Header() {
             ⚡
           </div>
           <span className="text-base font-bold tracking-tight">
-            Total<span className="text-[rgb(var(--primary))]">Unit</span>Converter
+            Quick<span className="text-[rgb(var(--primary))]">Unit</span>Swap
           </span>
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle />
           <a
-            href="https://github.com/bestacles/total-unit-converter"
+            href="https://github.com/bestacles/quick-unit-swap"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-[rgb(var(--muted-foreground))] transition-colors hover:text-[rgb(var(--foreground))]"

@@ -6,14 +6,14 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 const SITE_URL = 'https://www.quickunitswap.com';
-const SITE_NAME = 'Total Unit Converter';
+const SITE_NAME = 'QuickUnitSwap';
 const DESCRIPTION =
-  'Free online unit converter with 20 categories and 180+ units — length, area, volume, weight, temperature, energy, electricity, pressure, data, fuel economy, and more. Instant results, no ads.';
+  'Free online unit converter and calculator — 15 categories, 150+ units. Convert and calculate length, area, volume, weight, temperature, speed, energy, pressure, data, fuel economy, and more. Instant results, no ads.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — 180+ Units, 20 Categories`,
+    default: `${SITE_NAME} — 150+ Units, 15 Categories`,
     template: `%s | ${SITE_NAME}`,
   },
   description: DESCRIPTION,
@@ -26,16 +26,15 @@ export const metadata: Metadata = {
     'volume converter',
     'energy converter',
     'pressure converter',
-    'electricity converter',
     'data storage converter',
     'fuel economy converter',
     'metric imperial',
     'free unit calculator',
     'unit conversion tool',
   ],
-  authors: [{ name: 'Total Unit Converter', url: SITE_URL }],
-  creator: 'Total Unit Converter',
-  publisher: 'Total Unit Converter',
+  authors: [{ name: 'QuickUnitSwap', url: SITE_URL }],
+  creator: 'QuickUnitSwap',
+  publisher: 'QuickUnitSwap',
   category: 'tools',
   applicationName: SITE_NAME,
   generator: 'Next.js',
@@ -61,23 +60,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — 180+ Units, 20 Categories`,
+    title: `${SITE_NAME} — 150+ Units, 15 Categories`,
     description: DESCRIPTION,
     images: [
       {
         url: '/og.png',
         width: 1200,
         height: 630,
-        alt: 'Total Unit Converter — convert between 180+ units across 20 categories',
+        alt: 'QuickUnitSwap — convert and calculate with 150+ units across 15 categories',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE_NAME} — 180+ Units, 20 Categories`,
-    description: DESCRIPTION,
-    images: ['/og.png'],
+    title: `${SITE_NAME} — 150+ Units, 15 Categories`,
     creator: '@quickunitswap',
   },
   icons: {

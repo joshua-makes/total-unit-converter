@@ -1,7 +1,7 @@
 {
-  "name": "Total Unit Converter",
-  "short_name": "UnitConv",
-  "description": "Free online unit converter with 180+ units across 20 categories.",
+  "name": "QuickUnitSwap",
+  "short_name": "QuickSwap",
+  "description": "Free online unit converter with 150+ units across 15 categories.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0f1c",
@@ -28,7 +28,7 @@
       "src": "/og.png",
       "sizes": "1200x630",
       "type": "image/png",
-      "label": "Total Unit Converter home screen"
+      "label": "QuickUnitSwap home screen"
     }
   ]
 }
