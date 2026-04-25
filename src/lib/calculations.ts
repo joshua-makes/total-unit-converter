@@ -22,6 +22,16 @@ export interface Formula {
   inputs: CalcInput[];
   outputLabel: string;
   outputUnit: string;
+  /**
+   * When set, the result can be converted to other units.
+   * This is the Category whose unit list populates the output selector.
+   */
+  outputConvertCategory?: Category;
+  /**
+   * The unit key within `outputConvertCategory` that `compute()` returns its
+   * value in. Must exactly match a key in CATEGORIES[outputConvertCategory].units.
+   */
+  outputConvertFromKey?: string;
   compute: (v: Record<string, number>) => number | null;
 }
 
@@ -50,7 +60,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'a', label: 'Side a', unit: 'm', placeholder: '3', min: 0 },
         { id: 'b', label: 'Side b', unit: 'm', placeholder: '4', min: 0 },
       ],
-      outputLabel: 'Hypotenuse c', outputUnit: 'm',
+      outputLabel: 'Hypotenuse c', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'a', 'b'); return r ? Math.sqrt(r[0] ** 2 + r[1] ** 2) : null; },
     },
     {
@@ -61,7 +71,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'l', label: 'Length', unit: 'm', placeholder: '5', min: 0 },
         { id: 'w', label: 'Width',  unit: 'm', placeholder: '3', min: 0 },
       ],
-      outputLabel: 'Perimeter', outputUnit: 'm',
+      outputLabel: 'Perimeter', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'l', 'w'); return r ? 2 * (r[0] + r[1]) : null; },
     },
     {
@@ -71,7 +81,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'r', label: 'Radius', unit: 'm', placeholder: '5', min: 0 },
       ],
-      outputLabel: 'Circumference', outputUnit: 'm',
+      outputLabel: 'Circumference', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'r'); return r ? 2 * PI * r[0] : null; },
     },
     {
@@ -82,7 +92,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'v', label: 'Speed', unit: 'm/s', placeholder: '10', min: 0 },
         { id: 't', label: 'Time',  unit: 's',   placeholder: '60', min: 0 },
       ],
-      outputLabel: 'Distance', outputUnit: 'm',
+      outputLabel: 'Distance', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'v', 't'); return r ? r[0] * r[1] : null; },
     },
   ],
@@ -97,7 +107,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'l', label: 'Length', unit: 'm', placeholder: '5', min: 0 },
         { id: 'w', label: 'Width',  unit: 'm', placeholder: '3', min: 0 },
       ],
-      outputLabel: 'Area', outputUnit: 'm²',
+      outputLabel: 'Area', outputUnit: 'm²', outputConvertCategory: 'area', outputConvertFromKey: 'm²',
       compute: (v) => { const r = vals(v, 'l', 'w'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -107,7 +117,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'r', label: 'Radius', unit: 'm', placeholder: '5', min: 0 },
       ],
-      outputLabel: 'Area', outputUnit: 'm²',
+      outputLabel: 'Area', outputUnit: 'm²', outputConvertCategory: 'area', outputConvertFromKey: 'm²',
       compute: (v) => { const r = vals(v, 'r'); return r ? PI * r[0] ** 2 : null; },
     },
     {
@@ -118,7 +128,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'b', label: 'Base',   unit: 'm', placeholder: '6', min: 0 },
         { id: 'h', label: 'Height', unit: 'm', placeholder: '4', min: 0 },
       ],
-      outputLabel: 'Area', outputUnit: 'm²',
+      outputLabel: 'Area', outputUnit: 'm²', outputConvertCategory: 'area', outputConvertFromKey: 'm²',
       compute: (v) => { const r = vals(v, 'b', 'h'); return r ? 0.5 * r[0] * r[1] : null; },
     },
     {
@@ -130,7 +140,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'b', label: 'Parallel side b', unit: 'm', placeholder: '3', min: 0 },
         { id: 'h', label: 'Height',          unit: 'm', placeholder: '4', min: 0 },
       ],
-      outputLabel: 'Area', outputUnit: 'm²',
+      outputLabel: 'Area', outputUnit: 'm²', outputConvertCategory: 'area', outputConvertFromKey: 'm²',
       compute: (v) => { const r = vals(v, 'a', 'b', 'h'); return r ? 0.5 * (r[0] + r[1]) * r[2] : null; },
     },
     {
@@ -141,7 +151,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'a', label: 'Semi-axis a', unit: 'm', placeholder: '5', min: 0 },
         { id: 'b', label: 'Semi-axis b', unit: 'm', placeholder: '3', min: 0 },
       ],
-      outputLabel: 'Area', outputUnit: 'm²',
+      outputLabel: 'Area', outputUnit: 'm²', outputConvertCategory: 'area', outputConvertFromKey: 'm²',
       compute: (v) => { const r = vals(v, 'a', 'b'); return r ? PI * r[0] * r[1] : null; },
     },
   ],
@@ -157,7 +167,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'w', label: 'Width',  unit: 'm', placeholder: '3', min: 0 },
         { id: 'h', label: 'Height', unit: 'm', placeholder: '2', min: 0 },
       ],
-      outputLabel: 'Volume', outputUnit: 'm³',
+      outputLabel: 'Volume', outputUnit: 'm³', outputConvertCategory: 'volume', outputConvertFromKey: 'm³',
       compute: (v) => { const r = vals(v, 'l', 'w', 'h'); return r ? r[0] * r[1] * r[2] : null; },
     },
     {
@@ -168,7 +178,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'r', label: 'Radius', unit: 'm', placeholder: '2', min: 0 },
         { id: 'h', label: 'Height', unit: 'm', placeholder: '5', min: 0 },
       ],
-      outputLabel: 'Volume', outputUnit: 'm³',
+      outputLabel: 'Volume', outputUnit: 'm³', outputConvertCategory: 'volume', outputConvertFromKey: 'm³',
       compute: (v) => { const r = vals(v, 'r', 'h'); return r ? PI * r[0] ** 2 * r[1] : null; },
     },
     {
@@ -178,7 +188,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'r', label: 'Radius', unit: 'm', placeholder: '3', min: 0 },
       ],
-      outputLabel: 'Volume', outputUnit: 'm³',
+      outputLabel: 'Volume', outputUnit: 'm³', outputConvertCategory: 'volume', outputConvertFromKey: 'm³',
       compute: (v) => { const r = vals(v, 'r'); return r ? (4 / 3) * PI * r[0] ** 3 : null; },
     },
     {
@@ -189,7 +199,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'r', label: 'Radius', unit: 'm', placeholder: '2', min: 0 },
         { id: 'h', label: 'Height', unit: 'm', placeholder: '5', min: 0 },
       ],
-      outputLabel: 'Volume', outputUnit: 'm³',
+      outputLabel: 'Volume', outputUnit: 'm³', outputConvertCategory: 'volume', outputConvertFromKey: 'm³',
       compute: (v) => { const r = vals(v, 'r', 'h'); return r ? (1 / 3) * PI * r[0] ** 2 * r[1] : null; },
     },
     {
@@ -200,7 +210,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'b', label: 'Base side', unit: 'm', placeholder: '4', min: 0 },
         { id: 'h', label: 'Height',    unit: 'm', placeholder: '6', min: 0 },
       ],
-      outputLabel: 'Volume', outputUnit: 'm³',
+      outputLabel: 'Volume', outputUnit: 'm³', outputConvertCategory: 'volume', outputConvertFromKey: 'm³',
       compute: (v) => { const r = vals(v, 'b', 'h'); return r ? (1 / 3) * r[0] ** 2 * r[1] : null; },
     },
   ],
@@ -226,7 +236,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'm', label: 'Mass',    unit: 'kg',   placeholder: '70',   min: 0 },
         { id: 'g', label: 'Gravity', unit: 'm/s²', placeholder: '9.81', min: 0, step: 0.01, defaultValue: 9.81 },
       ],
-      outputLabel: 'Weight force', outputUnit: 'N',
+      outputLabel: 'Weight force', outputUnit: 'N', outputConvertCategory: 'force', outputConvertFromKey: 'N',
       compute: (v) => { const r = vals(v, 'm', 'g'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -248,7 +258,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'h', label: 'Height', unit: 'cm', placeholder: '175', min: 0 },
         { id: 's', label: 'Sex (0=male, 1=female)', unit: '', placeholder: '0', min: 0, max: 1, step: 1, defaultValue: 0 },
       ],
-      outputLabel: 'Ideal weight', outputUnit: 'kg',
+      outputLabel: 'Ideal weight', outputUnit: 'kg', outputConvertCategory: 'weight', outputConvertFromKey: 'kg',
       compute: (v) => {
         const r = vals(v, 'h', 's');
         if (!r) return null;
@@ -270,7 +280,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'c',  label: 'Specific heat', unit: 'J/kg·K', placeholder: '4186', min: 0, defaultValue: 4186 },
         { id: 'dT', label: 'Temp. change ΔT', unit: '°C',  placeholder: '10' },
       ],
-      outputLabel: 'Heat energy Q', outputUnit: 'J',
+      outputLabel: 'Heat energy Q', outputUnit: 'J', outputConvertCategory: 'energy', outputConvertFromKey: 'J',
       compute: (v) => { const r = vals(v, 'm', 'c', 'dT'); return r ? r[0] * r[1] * r[2] : null; },
     },
     {
@@ -282,7 +292,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'a', label: 'Coefficient α',       unit: '1/°C', placeholder: '0.000012', step: 0.0000001 },
         { id: 'd', label: 'Temp. change ΔT',     unit: '°C',   placeholder: '100' },
       ],
-      outputLabel: 'Length change ΔL', outputUnit: 'm',
+      outputLabel: 'Length change ΔL', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'L', 'a', 'd'); return r ? r[0] * r[1] * r[2] : null; },
     },
     {
@@ -292,7 +302,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'c', label: 'Temperature', unit: '°C', placeholder: '100' },
       ],
-      outputLabel: 'Temperature', outputUnit: 'K',
+      outputLabel: 'Temperature', outputUnit: 'K', outputConvertCategory: 'temperature', outputConvertFromKey: 'K',
       compute: (v) => { const r = vals(v, 'c'); return r ? r[0] + 273.15 : null; },
     },
   ],
@@ -307,7 +317,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'v', label: 'Speed', unit: 'm/s', placeholder: '10', min: 0 },
         { id: 't', label: 'Time',  unit: 's',   placeholder: '60', min: 0 },
       ],
-      outputLabel: 'Distance', outputUnit: 'm',
+      outputLabel: 'Distance', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'v', 't'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -318,7 +328,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'd', label: 'Distance', unit: 'm', placeholder: '100', min: 0 },
         { id: 't', label: 'Time',     unit: 's', placeholder: '10',  min: 0 },
       ],
-      outputLabel: 'Speed', outputUnit: 'm/s',
+      outputLabel: 'Speed', outputUnit: 'm/s', outputConvertCategory: 'speed', outputConvertFromKey: 'm/s',
       compute: (v) => { const r = vals(v, 'd', 't'); return r && r[1] > 0 ? r[0] / r[1] : null; },
     },
     {
@@ -329,7 +339,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'd', label: 'Distance', unit: 'm',   placeholder: '100', min: 0 },
         { id: 'v', label: 'Speed',    unit: 'm/s', placeholder: '10',  min: 0 },
       ],
-      outputLabel: 'Time', outputUnit: 's',
+      outputLabel: 'Time', outputUnit: 's', outputConvertCategory: 'time', outputConvertFromKey: 's',
       compute: (v) => { const r = vals(v, 'd', 'v'); return r && r[1] > 0 ? r[0] / r[1] : null; },
     },
     {
@@ -357,7 +367,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'm', label: 'Minutes', unit: 'min', placeholder: '30', min: 0, step: 1, defaultValue: 0 },
         { id: 's', label: 'Seconds', unit: 's',   placeholder: '0',  min: 0, step: 1, defaultValue: 0 },
       ],
-      outputLabel: 'Total seconds', outputUnit: 's',
+      outputLabel: 'Total seconds', outputUnit: 's', outputConvertCategory: 'time', outputConvertFromKey: 's',
       compute: (v) => { const r = vals(v, 'h', 'm', 's'); return r ? r[0] * 3600 + r[1] * 60 + r[2] : null; },
     },
     {
@@ -367,7 +377,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 's', label: 'Seconds', unit: 's', placeholder: '3661', min: 0, step: 1 },
       ],
-      outputLabel: 'Decimal hours', outputUnit: 'h',
+      outputLabel: 'Decimal hours', outputUnit: 'h', outputConvertCategory: 'time', outputConvertFromKey: 'h',
       compute: (v) => { const r = vals(v, 's'); return r ? r[0] / 3600 : null; },
     },
     {
@@ -377,7 +387,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'T', label: 'Period', unit: 's', placeholder: '0.02', min: 0, step: 0.001 },
       ],
-      outputLabel: 'Frequency', outputUnit: 'Hz',
+      outputLabel: 'Frequency', outputUnit: 'Hz', outputConvertCategory: 'frequency', outputConvertFromKey: 'Hz',
       compute: (v) => { const r = vals(v, 'T'); return r && r[0] > 0 ? 1 / r[0] : null; },
     },
   ],
@@ -402,7 +412,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'r', label: 'Radius',  unit: 'm', placeholder: '5', min: 0 },
         { id: 'a', label: 'Angle θ', unit: '°', placeholder: '90', min: 0 },
       ],
-      outputLabel: 'Arc length', outputUnit: 'm',
+      outputLabel: 'Arc length', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'r', 'a'); return r ? r[0] * (r[1] * DEG) : null; },
     },
     {
@@ -425,7 +435,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'b', label: 'Side b', unit: 'm', placeholder: '7', min: 0 },
         { id: 'C', label: 'Angle C (between a & b)', unit: '°', placeholder: '60', min: 0, max: 180 },
       ],
-      outputLabel: 'Side c', outputUnit: 'm',
+      outputLabel: 'Side c', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'a', 'b', 'C'); return r ? Math.sqrt(r[0] ** 2 + r[1] ** 2 - 2 * r[0] * r[1] * Math.cos(r[2] * DEG)) : null; },
     },
   ],
@@ -439,7 +449,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'f', label: 'Frequency', unit: 'Hz', placeholder: '440', min: 0 },
       ],
-      outputLabel: 'Wavelength λ', outputUnit: 'm',
+      outputLabel: 'Wavelength λ', outputUnit: 'm', outputConvertCategory: 'length', outputConvertFromKey: 'm',
       compute: (v) => { const r = vals(v, 'f'); return r && r[0] > 0 ? 299_792_458 / r[0] : null; },
     },
     {
@@ -449,7 +459,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'f', label: 'Frequency', unit: 'Hz', placeholder: '50', min: 0 },
       ],
-      outputLabel: 'Period T', outputUnit: 's',
+      outputLabel: 'Period T', outputUnit: 's', outputConvertCategory: 'time', outputConvertFromKey: 's',
       compute: (v) => { const r = vals(v, 'f'); return r && r[0] > 0 ? 1 / r[0] : null; },
     },
     {
@@ -469,7 +479,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
       inputs: [
         { id: 'T', label: 'Period', unit: 's', placeholder: '0.02', min: 0, step: 0.001 },
       ],
-      outputLabel: 'Frequency', outputUnit: 'Hz',
+      outputLabel: 'Frequency', outputUnit: 'Hz', outputConvertCategory: 'frequency', outputConvertFromKey: 'Hz',
       compute: (v) => { const r = vals(v, 'T'); return r && r[0] > 0 ? 1 / r[0] : null; },
     },
   ],
@@ -484,7 +494,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'F', label: 'Force', unit: 'N',  placeholder: '100', min: 0 },
         { id: 'A', label: 'Area',  unit: 'm²', placeholder: '0.5', min: 0, step: 0.001 },
       ],
-      outputLabel: 'Pressure', outputUnit: 'Pa',
+      outputLabel: 'Pressure', outputUnit: 'Pa', outputConvertCategory: 'pressure', outputConvertFromKey: 'Pa',
       compute: (v) => { const r = vals(v, 'F', 'A'); return r && r[1] > 0 ? r[0] / r[1] : null; },
     },
     {
@@ -496,7 +506,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'V1', label: 'Initial volume V₁',   unit: 'm³', placeholder: '1',      min: 0 },
         { id: 'V2', label: 'Final volume V₂',     unit: 'm³', placeholder: '0.5',   min: 0, step: 0.001 },
       ],
-      outputLabel: 'Final pressure P₂', outputUnit: 'Pa',
+      outputLabel: 'Final pressure P₂', outputUnit: 'Pa', outputConvertCategory: 'pressure', outputConvertFromKey: 'Pa',
       compute: (v) => { const r = vals(v, 'P1', 'V1', 'V2'); return r && r[2] > 0 ? r[0] * r[1] / r[2] : null; },
     },
     {
@@ -508,7 +518,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'A1', label: 'Input area A₁',  unit: 'm²', placeholder: '0.01', min: 0, step: 0.001 },
         { id: 'A2', label: 'Output area A₂', unit: 'm²', placeholder: '0.1',  min: 0, step: 0.001 },
       ],
-      outputLabel: 'Output force F₂', outputUnit: 'N',
+      outputLabel: 'Output force F₂', outputUnit: 'N', outputConvertCategory: 'force', outputConvertFromKey: 'N',
       compute: (v) => { const r = vals(v, 'F1', 'A1', 'A2'); return r && r[1] > 0 ? r[0] * r[2] / r[1] : null; },
     },
   ],
@@ -523,7 +533,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'm', label: 'Mass',     unit: 'kg',  placeholder: '70', min: 0 },
         { id: 'v', label: 'Velocity', unit: 'm/s', placeholder: '10' },
       ],
-      outputLabel: 'Kinetic energy', outputUnit: 'J',
+      outputLabel: 'Kinetic energy', outputUnit: 'J', outputConvertCategory: 'energy', outputConvertFromKey: 'J',
       compute: (v) => { const r = vals(v, 'm', 'v'); return r ? 0.5 * r[0] * r[1] ** 2 : null; },
     },
     {
@@ -535,7 +545,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'g', label: 'Gravity', unit: 'm/s²', placeholder: '9.81', min: 0, step: 0.01, defaultValue: 9.81 },
         { id: 'h', label: 'Height',  unit: 'm',    placeholder: '10' },
       ],
-      outputLabel: 'Potential energy', outputUnit: 'J',
+      outputLabel: 'Potential energy', outputUnit: 'J', outputConvertCategory: 'energy', outputConvertFromKey: 'J',
       compute: (v) => { const r = vals(v, 'm', 'g', 'h'); return r ? r[0] * r[1] * r[2] : null; },
     },
     {
@@ -547,7 +557,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'd', label: 'Distance', unit: 'm', placeholder: '10', min: 0 },
         { id: 'a', label: 'Angle θ',  unit: '°', placeholder: '0',  defaultValue: 0 },
       ],
-      outputLabel: 'Work', outputUnit: 'J',
+      outputLabel: 'Work', outputUnit: 'J', outputConvertCategory: 'energy', outputConvertFromKey: 'J',
       compute: (v) => { const r = vals(v, 'F', 'd', 'a'); return r ? r[0] * r[1] * Math.cos(r[2] * DEG) : null; },
     },
     {
@@ -558,7 +568,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'P', label: 'Power', unit: 'W', placeholder: '1000', min: 0 },
         { id: 't', label: 'Time',  unit: 's', placeholder: '3600', min: 0 },
       ],
-      outputLabel: 'Energy', outputUnit: 'J',
+      outputLabel: 'Energy', outputUnit: 'J', outputConvertCategory: 'energy', outputConvertFromKey: 'J',
       compute: (v) => { const r = vals(v, 'P', 't'); return r ? r[0] * r[1] : null; },
     },
   ],
@@ -573,7 +583,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'W', label: 'Work / Energy', unit: 'J', placeholder: '1000', min: 0 },
         { id: 't', label: 'Time',          unit: 's', placeholder: '10',   min: 0 },
       ],
-      outputLabel: 'Power', outputUnit: 'W',
+      outputLabel: 'Power', outputUnit: 'W', outputConvertCategory: 'power', outputConvertFromKey: 'W',
       compute: (v) => { const r = vals(v, 'W', 't'); return r && r[1] > 0 ? r[0] / r[1] : null; },
     },
     {
@@ -584,7 +594,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'F', label: 'Force',    unit: 'N',   placeholder: '200', min: 0 },
         { id: 'v', label: 'Velocity', unit: 'm/s', placeholder: '5',   min: 0 },
       ],
-      outputLabel: 'Power', outputUnit: 'W',
+      outputLabel: 'Power', outputUnit: 'W', outputConvertCategory: 'power', outputConvertFromKey: 'W',
       compute: (v) => { const r = vals(v, 'F', 'v'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -595,7 +605,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'V', label: 'Voltage', unit: 'V', placeholder: '120', min: 0 },
         { id: 'I', label: 'Current', unit: 'A', placeholder: '5',   min: 0 },
       ],
-      outputLabel: 'Power', outputUnit: 'W',
+      outputLabel: 'Power', outputUnit: 'W', outputConvertCategory: 'power', outputConvertFromKey: 'W',
       compute: (v) => { const r = vals(v, 'V', 'I'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -621,7 +631,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'm', label: 'Mass',         unit: 'kg',   placeholder: '10' },
         { id: 'a', label: 'Acceleration', unit: 'm/s²', placeholder: '9.81' },
       ],
-      outputLabel: 'Force', outputUnit: 'N',
+      outputLabel: 'Force', outputUnit: 'N', outputConvertCategory: 'force', outputConvertFromKey: 'N',
       compute: (v) => { const r = vals(v, 'm', 'a'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -644,7 +654,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'k', label: 'Spring constant', unit: 'N/m', placeholder: '200',  min: 0 },
         { id: 'x', label: 'Extension x',     unit: 'm',   placeholder: '0.1',  min: 0, step: 0.001 },
       ],
-      outputLabel: 'Spring force', outputUnit: 'N',
+      outputLabel: 'Spring force', outputUnit: 'N', outputConvertCategory: 'force', outputConvertFromKey: 'N',
       compute: (v) => { const r = vals(v, 'k', 'x'); return r ? r[0] * r[1] : null; },
     },
     {
@@ -655,7 +665,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'm', label: 'Mass',    unit: 'kg',   placeholder: '70',   min: 0 },
         { id: 'g', label: 'Gravity', unit: 'm/s²', placeholder: '9.81', min: 0, step: 0.01, defaultValue: 9.81 },
       ],
-      outputLabel: 'Weight force', outputUnit: 'N',
+      outputLabel: 'Weight force', outputUnit: 'N', outputConvertCategory: 'force', outputConvertFromKey: 'N',
       compute: (v) => { const r = vals(v, 'm', 'g'); return r ? r[0] * r[1] : null; },
     },
   ],
@@ -670,7 +680,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 's', label: 'File size',  unit: 'MB',   placeholder: '500', min: 0 },
         { id: 'b', label: 'Bandwidth', unit: 'Mbps', placeholder: '100', min: 0 },
       ],
-      outputLabel: 'Download time', outputUnit: 's',
+      outputLabel: 'Download time', outputUnit: 's', outputConvertCategory: 'time', outputConvertFromKey: 's',
       compute: (v) => { const r = vals(v, 's', 'b'); return r && r[1] > 0 ? (r[0] * 8) / r[1] : null; },
     },
     {
@@ -681,7 +691,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'n', label: 'Number of files', unit: '',   placeholder: '1000', min: 0, step: 1 },
         { id: 's', label: 'Size per file',   unit: 'MB', placeholder: '5',    min: 0 },
       ],
-      outputLabel: 'Total storage', outputUnit: 'GB',
+      outputLabel: 'Total storage', outputUnit: 'GB', outputConvertCategory: 'data', outputConvertFromKey: 'GB',
       compute: (v) => { const r = vals(v, 'n', 's'); return r ? (r[0] * r[1]) / 1024 : null; },
     },
     {
@@ -719,7 +729,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 't', label: 'Tank capacity', unit: 'L',      placeholder: '50', min: 0 },
         { id: 'c', label: 'Consumption',   unit: 'L/100km', placeholder: '8',  min: 0, step: 0.1 },
       ],
-      outputLabel: 'Range', outputUnit: 'km',
+      outputLabel: 'Range', outputUnit: 'km', outputConvertCategory: 'length', outputConvertFromKey: 'km',
       compute: (v) => { const r = vals(v, 't', 'c'); return r && r[1] > 0 ? (r[0] * 100) / r[1] : null; },
     },
     {
@@ -730,7 +740,7 @@ export const CALCULATIONS: Partial<Record<Category, Formula[]>> = {
         { id: 'd', label: 'Distance',    unit: 'km',      placeholder: '300', min: 0 },
         { id: 'c', label: 'Consumption', unit: 'L/100km', placeholder: '8',   min: 0, step: 0.1 },
       ],
-      outputLabel: 'CO₂ emitted', outputUnit: 'kg',
+      outputLabel: 'CO₂ emitted', outputUnit: 'kg', outputConvertCategory: 'weight', outputConvertFromKey: 'kg',
       compute: (v) => { const r = vals(v, 'd', 'c'); return r ? (r[0] * r[1] * 2.31) / 100 : null; },
     },
     {

@@ -93,4 +93,44 @@ export const UNIT_PRESETS: Partial<Record<Category, UnitPreset[]>> = {
     { label: 'MB → MiB',   from: 'MB',  to: 'MiB' },
     { label: 'GB → GiB',   from: 'GB',  to: 'GiB' },
   ],
+
+  time: [
+    { label: 'h → min',    from: 'h',    to: 'min'  },
+    { label: 'day → h',    from: 'day',  to: 'h'    },
+    { label: 'min → s',    from: 'min',  to: 's'    },
+    { label: 'yr → days',  from: 'year', to: 'day'  },
+    { label: 'wk → days',  from: 'week', to: 'day'  },
+  ],
+
+  angle: [
+    { label: '° → rad',    from: 'deg',    to: 'rad'    },
+    { label: 'rad → °',    from: 'rad',    to: 'deg'    },
+    { label: 'turn → °',   from: 'turn',   to: 'deg'    },
+    { label: '° → arcmin', from: 'deg',    to: 'arcmin' },
+    { label: "' → arcsec", from: 'arcmin', to: 'arcsec' },
+  ],
+
+  frequency: [
+    { label: 'GHz → MHz', from: 'GHz', to: 'MHz' },
+    { label: 'MHz → kHz', from: 'MHz', to: 'kHz' },
+    { label: 'kHz → Hz',  from: 'kHz', to: 'Hz'  },
+    { label: 'rpm → Hz',  from: 'rpm', to: 'Hz'  },
+    { label: 'GHz → Hz',  from: 'GHz', to: 'Hz'  },
+  ],
+
+  power: [
+    { label: 'kW → hp',    from: 'kW', to: 'hp'     },
+    { label: 'hp → kW',    from: 'hp', to: 'kW'     },
+    { label: 'W → kW',     from: 'W',  to: 'kW'     },
+    { label: 'MW → kW',    from: 'MW', to: 'kW'     },
+    { label: 'kW → BTU/h', from: 'kW', to: 'BTU/hr' },
+  ],
+
+  force: [
+    { label: 'N → lbf',  from: 'N',   to: 'lbf' },
+    { label: 'lbf → N',  from: 'lbf', to: 'N'   },
+    { label: 'kgf → N',  from: 'kgf', to: 'N'   },
+    { label: 'kN → lbf', from: 'kN',  to: 'lbf' },
+    { label: 'N → kgf',  from: 'N',   to: 'kgf' },
+  ],
 };

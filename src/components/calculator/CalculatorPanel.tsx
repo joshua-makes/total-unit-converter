@@ -3,9 +3,11 @@
 import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Label } from '@/components/ui/Label';
-import { type Category } from '@/lib/units';
+import { CATEGORIES, type Category } from '@/lib/units';
 import { CALCULATIONS, type Formula } from '@/lib/calculations';
+import { convert } from '@/lib/convert';
 import { formatNumber } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +32,7 @@ export function CalculatorPanel({ category, precision }: Props) {
   );
   const [formulaId, setFormulaId] = useState<string>(formulas[0]?.id ?? '');
   const [inputs, setInputs] = useState<Record<string, string>>(() => initInputs(formulas[0]));
+  const [outputUnitKey, setOutputUnitKey] = useState<string>(formulas[0]?.outputConvertFromKey ?? '');
 
   const formula = useMemo(
     () => formulas.find((f) => f.id === formulaId) ?? formulas[0],
@@ -40,6 +43,7 @@ export function CalculatorPanel({ category, precision }: Props) {
     const next = formulas.find((f) => f.id === id);
     setFormulaId(id);
     setInputs(initInputs(next));
+    setOutputUnitKey(next?.outputConvertFromKey ?? '');
   }
 
   const numericInputs = useMemo<Record<string, number>>(() => {
@@ -60,6 +64,12 @@ export function CalculatorPanel({ category, precision }: Props) {
     if (!formula) return null;
     return formula.compute(numericInputs);
   }, [formula, numericInputs]);
+
+  const convertedResult = useMemo<number | null>(() => {
+    if (result === null || !formula?.outputConvertCategory || !formula?.outputConvertFromKey) return result;
+    if (!outputUnitKey || outputUnitKey === formula.outputConvertFromKey) return result;
+    return convert(result, formula.outputConvertFromKey, outputUnitKey, formula.outputConvertCategory as Category);
+  }, [result, formula, outputUnitKey]);
 
   if (formulas.length === 0) {
     return (
@@ -136,26 +146,40 @@ export function CalculatorPanel({ category, precision }: Props) {
             </div>
 
             {/* ── Result ── */}
-            <div className="mt-5 flex items-baseline justify-between gap-4 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
-              <span className="text-sm font-medium text-[rgb(var(--muted-foreground))]">
-                {formula.outputLabel}
-              </span>
-              <span className="text-right text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
-                {result !== null ? (
-                  <>
-                    {formatNumber(result, precision)}
-                    {formula.outputUnit && (
-                      <span className="ml-1.5 text-sm font-normal text-[rgb(var(--muted-foreground))]">
-                        {formula.outputUnit}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">
-                    Enter values above
+            <div className="mt-5 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium text-[rgb(var(--muted-foreground))]">
+                  {formula.outputLabel}
+                </span>
+                {formula.outputConvertCategory && (
+                  <Select
+                    value={outputUnitKey}
+                    onChange={(e) => setOutputUnitKey(e.target.value)}
+                    className="h-8 w-auto min-w-[8rem] py-0 text-sm"
+                    aria-label="Output unit"
+                  >
+                    {Object.entries(CATEGORIES[formula.outputConvertCategory as Category].units).map(([key, def]) => (
+                      <option key={key} value={key}>{def.label} ({def.symbol})</option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
+                  {convertedResult !== null
+                    ? formatNumber(convertedResult, precision)
+                    : <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">Enter values above</span>
+                  }
+                </span>
+                {convertedResult !== null && (
+                  <span className="text-sm font-normal text-[rgb(var(--muted-foreground))]">
+                    {formula.outputConvertCategory
+                      ? CATEGORIES[formula.outputConvertCategory as Category].units[outputUnitKey]?.symbol ?? ''
+                      : formula.outputUnit
+                    }
                   </span>
                 )}
-              </span>
+              </div>
             </div>
           </div>
         </>
