@@ -9,6 +9,7 @@ import { QuickConversions } from '@/components/converter/QuickConversions';
 import { PrecisionControl } from '@/components/converter/PrecisionControl';
 import { CalculatorPanel } from '@/components/calculator/CalculatorPanel';
 import { Toast } from '@/components/ui/Toast';
+import { SearchOverlay, type SearchResult } from '@/components/search/SearchOverlay';
 import { type Category, CATEGORIES } from '@/lib/units';
 import { loadPrefs, savePrefs } from '@/lib/storage';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ export default function HomePage() {
   const [toast, setToast]           = useState<string | null>(null);
   const [mounted, setMounted]       = useState(false);
   const [mode, setMode]             = useState<'convert' | 'calculate'>('convert');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -64,6 +66,31 @@ export default function HomePage() {
     setInputValue(String(value));
   }, []);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
+  const handleSearchSelect = useCallback((result: SearchResult) => {
+    if (result.type === 'category') {
+      handleCategoryChange(result.category);
+      setMode('convert');
+    } else if (result.type === 'unit') {
+      handleCategoryChange(result.category);
+      setMode('convert');
+      setFromUnit(result.unitKey);
+    } else {
+      handleCategoryChange(result.category);
+      setMode('calculate');
+    }
+  }, [handleCategoryChange]);
+
   const showToast = useCallback((msg: string) => {
     setToast(msg);
   }, []);
@@ -72,7 +99,13 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[rgb(var(--background))] text-[rgb(var(--foreground))]">
-      <Header />
+      <Header onSearchOpen={() => setSearchOpen(true)} />
+
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onSelect={handleSearchSelect}
+      />
 
       {/* ── Body: sidebar + main ── */}
       <div className="flex flex-1 flex-col md:flex-row">

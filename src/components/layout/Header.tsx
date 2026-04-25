@@ -1,11 +1,15 @@
 import { Container } from './Container';
 import { ThemeToggle } from './ThemeToggle';
 
-export function Header() {
+interface HeaderProps {
+  onSearchOpen: () => void;
+}
+
+export function Header({ onSearchOpen }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-[rgb(var(--border))] bg-[rgb(var(--background))]/90 backdrop-blur-sm">
-      <Container className="flex h-full items-center justify-between">
-        <div className="flex items-center gap-2.5">
+      <Container className="flex h-full items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 shrink-0">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[rgb(var(--primary))] text-sm text-[rgb(var(--primary-foreground))] font-bold select-none">
             ⚡
           </div>
@@ -13,7 +17,24 @@ export function Header() {
             Quick<span className="text-[rgb(var(--primary))]">Unit</span>Swap
           </span>
         </div>
-        <div className="flex items-center gap-1">
+
+        {/* Search trigger */}
+        <button
+          type="button"
+          onClick={onSearchOpen}
+          aria-label="Search units and formulas"
+          className="flex flex-1 max-w-xs items-center gap-2 rounded-lg border border-[rgb(var(--border))] bg-[rgb(var(--muted))]/60 px-3 py-1.5 text-sm text-[rgb(var(--muted-foreground))] transition-colors hover:border-[rgb(var(--foreground))]/30 hover:text-[rgb(var(--foreground))]"
+        >
+          <svg className="h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 18a7.5 7.5 0 006.15-3.15z" />
+          </svg>
+          <span className="flex-1 text-left text-xs">Search units &amp; formulas…</span>
+          <kbd className="hidden items-center gap-0.5 rounded border border-[rgb(var(--border))] px-1 py-0.5 text-[10px] sm:inline-flex">
+            <span>⌘</span><span>K</span>
+          </kbd>
+        </button>
+
+        <div className="flex items-center gap-1 shrink-0">
           <ThemeToggle />
           <a
             href="https://github.com/joshua-makes/total-unit-converter"
