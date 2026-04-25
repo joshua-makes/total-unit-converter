@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { Container } from '@/components/layout/Container';
-import { CategoryTabs } from '@/components/converter/CategoryTabs';
+import { CategoryNav, CATEGORY_ICONS } from '@/components/converter/CategoryTabs';
 import { ConverterPanel } from '@/components/converter/ConverterPanel';
 import { QuickConversions } from '@/components/converter/QuickConversions';
 import { PrecisionControl } from '@/components/converter/PrecisionControl';
@@ -16,13 +15,13 @@ const DEFAULT_CATEGORY: Category = 'length';
 const DEFAULT_PRECISION = 4;
 
 export default function HomePage() {
-  const [category, setCategory] = useState<Category>(DEFAULT_CATEGORY);
-  const [fromUnit, setFromUnit] = useState<string>('m');
-  const [toUnit, setToUnit] = useState<string>('km');
+  const [category, setCategory]     = useState<Category>(DEFAULT_CATEGORY);
+  const [fromUnit, setFromUnit]     = useState<string>('m');
+  const [toUnit, setToUnit]         = useState<string>('km');
   const [inputValue, setInputValue] = useState<string>('');
-  const [precision, setPrecision] = useState<number>(DEFAULT_PRECISION);
-  const [toast, setToast] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const [precision, setPrecision]   = useState<number>(DEFAULT_PRECISION);
+  const [toast, setToast]           = useState<string | null>(null);
+  const [mounted, setMounted]       = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -43,7 +42,7 @@ export default function HomePage() {
     savePrefs({
       category,
       fromUnit: units.includes(fromUnit) ? fromUnit : units[0],
-      toUnit: units.includes(toUnit) ? toUnit : (units[1] ?? units[0]),
+      toUnit:   units.includes(toUnit)   ? toUnit   : (units[1] ?? units[0]),
       precision,
     });
   }, [category, fromUnit, toUnit, precision, mounted]);
@@ -66,13 +65,39 @@ export default function HomePage() {
     setToast(msg);
   }, []);
 
+  const unitCount = Object.keys(CATEGORIES[category].units).length;
+
   return (
     <div className="flex min-h-screen flex-col bg-[rgb(var(--background))] text-[rgb(var(--foreground))]">
       <Header />
-      <main className="flex-1 py-8">
-        <Container>
-          <CategoryTabs value={category} onChange={handleCategoryChange} />
-          <div className="mt-6">
+
+      {/* ── Body: sidebar + main ── */}
+      <div className="flex flex-1 flex-col md:flex-row">
+
+        {/* CategoryNav renders:
+            - <aside> (desktop sidebar, hidden on mobile)
+            - <div>   (mobile picker, hidden on desktop)
+            Both are flex children; CSS hides the irrelevant one per breakpoint. */}
+        <CategoryNav value={category} onChange={handleCategoryChange} />
+
+        {/* ── Main content ── */}
+        <main className="flex-1 min-w-0">
+          <div className="mx-auto max-w-2xl space-y-6 p-4 sm:p-6 lg:p-8">
+
+            {/* Category heading */}
+            <div className="flex items-center gap-3 animate-pop-in">
+              <span className="text-4xl leading-none" aria-hidden="true">
+                {CATEGORY_ICONS[category]}
+              </span>
+              <div>
+                <h1 className="text-xl font-bold leading-tight">{CATEGORIES[category].name}</h1>
+                <p className="text-sm text-[rgb(var(--muted-foreground))]">
+                  {unitCount} unit{unitCount !== 1 ? 's' : ''} available
+                </p>
+              </div>
+            </div>
+
+            {/* Converter */}
             <ConverterPanel
               category={category}
               fromUnit={fromUnit}
@@ -84,19 +109,21 @@ export default function HomePage() {
               onInputChange={setInputValue}
               onCopied={showToast}
             />
-          </div>
-          <div className="mt-4">
+
+            {/* Precision control */}
             <PrecisionControl value={precision} onChange={setPrecision} />
-          </div>
-          <div className="mt-6">
+
+            {/* Quick conversions */}
             <QuickConversions
               category={category}
               precision={precision}
               onSelect={handleQuickConversion}
             />
+
           </div>
-        </Container>
-      </main>
+        </main>
+      </div>
+
       <Footer />
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
