@@ -36,6 +36,23 @@ function initInputUnits(formula: Formula | undefined): Record<string, string> {
   return result;
 }
 
+/**
+ * Finds which Category contains `unitKey` as a unit, enabling output conversion.
+ * Returns null for composite/derived units (e.g. "kg/m²", "N·m", "%").
+ */
+function findOutputConversion(
+  unitKey: string,
+): { category: Category; baseKey: string } | null {
+  for (const [catKey, catDef] of Object.entries(CATEGORIES) as Array<
+    [Category, (typeof CATEGORIES)[Category]]
+  >) {
+    if (Object.prototype.hasOwnProperty.call(catDef.units, unitKey)) {
+      return { category: catKey, baseKey: unitKey };
+    }
+  }
+  return null;
+}
+
 export function CalculatorPanel({ category, precision }: Props) {
   const formulas = useMemo(
     () => CALCULATIONS[category] ?? [],
@@ -44,6 +61,7 @@ export function CalculatorPanel({ category, precision }: Props) {
   const [formulaId, setFormulaId] = useState<string>(formulas[0]?.id ?? '');
   const [inputs, setInputs] = useState<Record<string, string>>(() => initInputs(formulas[0]));
   const [inputUnits, setInputUnits] = useState<Record<string, string>>(() => initInputUnits(formulas[0]));
+  const [outputUnit, setOutputUnit] = useState<string>(formulas[0]?.outputUnit ?? '');
 
   const formula = useMemo(
     () => formulas.find((f) => f.id === formulaId) ?? formulas[0],
@@ -55,6 +73,7 @@ export function CalculatorPanel({ category, precision }: Props) {
     setFormulaId(id);
     setInputs(initInputs(next));
     setInputUnits(initInputUnits(next));
+    setOutputUnit(next?.outputUnit ?? '');
   }
 
   const numericInputs = useMemo<Record<string, number>>(() => {
@@ -86,6 +105,18 @@ export function CalculatorPanel({ category, precision }: Props) {
     if (!formula) return null;
     return formula.compute(numericInputs);
   }, [formula, numericInputs]);
+
+  const outputConversion = useMemo(
+    () => (formula ? findOutputConversion(formula.outputUnit) : null),
+    [formula],
+  );
+
+  const displayResult = useMemo(() => {
+    if (result === null || !outputConversion || outputUnit === outputConversion.baseKey) {
+      return result;
+    }
+    return convert(result, outputConversion.baseKey, outputUnit, outputConversion.category);
+  }, [result, outputConversion, outputUnit]);
 
   if (formulas.length === 0) {
     return (
@@ -193,26 +224,39 @@ export function CalculatorPanel({ category, precision }: Props) {
             </div>
 
             {/* ── Result ── */}
-            <div className="mt-5 flex items-baseline justify-between gap-4 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
+            <div className="mt-5 flex items-center justify-between gap-4 rounded-xl border border-[rgb(var(--primary))]/25 bg-[rgb(var(--primary))]/8 px-5 py-4">
               <span className="text-sm font-medium text-[rgb(var(--muted-foreground))]">
                 {formula.outputLabel}
               </span>
-              <span className="text-right text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
-                {result !== null ? (
-                  <>
-                    {formatNumber(result, precision)}
-                    {formula.outputUnit && (
+              {result !== null ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-right text-2xl font-bold tabular-nums text-[rgb(var(--primary))]">
+                    {formatNumber((displayResult ?? result) as number, precision)}
+                  </span>
+                  {outputConversion ? (
+                    <Select
+                      value={outputUnit}
+                      onChange={(e) => setOutputUnit(e.target.value)}
+                      className="h-9 w-auto max-w-[9rem] shrink-0 text-xs"
+                      aria-label="Output unit"
+                    >
+                      {Object.entries(CATEGORIES[outputConversion.category].units).map(([key, def]) => (
+                        <option key={key} value={key}>{def.symbol}</option>
+                      ))}
+                    </Select>
+                  ) : (
+                    formula.outputUnit && (
                       <span className="ml-1.5 text-sm font-normal text-[rgb(var(--muted-foreground))]">
                         {formula.outputUnit}
                       </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">
-                    Enter values above
-                  </span>
-                )}
-              </span>
+                    )
+                  )}
+                </div>
+              ) : (
+                <span className="text-base font-normal text-[rgb(var(--muted-foreground))]">
+                  Enter values above
+                </span>
+              )}
             </div>
           </div>
         </>
